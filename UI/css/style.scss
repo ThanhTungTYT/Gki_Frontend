@@ -1,0 +1,149 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body{
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  background-color: darkgray;
+}
+.main{
+  position: relative;
+  height: 100vh;
+  width: 40%;
+  background: url("../img/background.png") center/ cover no-repeat;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 50px;
+
+  .logo{
+    position: relative;
+    top: -130px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    font-size: 100px;
+    font-weight: bolder;
+  }
+  .welcome{
+    position: relative;
+    top: -130px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    h1{
+      font-size: 60px;
+      color: #ffffff;
+    }
+    h3{
+      font-size: 40px;
+      color: #ffd54f;
+    }
+  }
+  .btn-list{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    .btn{
+      width: 150px;
+      height: 80px;
+      a{
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-decoration: none;
+        background-color: #ffd54f;
+        box-shadow: 5px 5px 10px 0 rgb(0, 0, 0, 0.2);
+        border-radius: 15px;
+        cursor: pointer;
+        i{
+          font-size: 28px;
+          color: darkorchid;
+        }
+        &:active i{
+          color: black;
+        }
+      }
+    }
+  }
+  .overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border-radius: 20px;
+    z-index: 10;
+  }
+  .input{
+    position: absolute;
+    z-index: 11;
+    width: 500px;
+    min-height: 100px;
+    height: fit-content;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 30px;
+    background: rgba(25, 20, 100, 0.55);
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    border-radius: 15px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    color: white;
+    padding: 30px;
+    h3{
+      font-size: 30px;
+    }
+    form{
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      input{
+        height: 50px;
+        width: 250px;
+        background: transparent;
+        border: none;
+        border-bottom: 2px solid white;
+        color: black;
+        &::placeholder{
+          color: black;
+          font-size: 16px;
+        }
+        &:focus{
+          outline: none;
+        }
+      }
+      button{
+        width: 80px;
+        height: 40px;
+        border: none;
+        background: #9eff00;
+        color: #0c0c0c;
+        cursor: pointer;
+        &:hover{
+          background: #76c100;
+          color: white;
+        }
+      }
+    }
+  }
+}
