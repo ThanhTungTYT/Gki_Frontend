@@ -7,37 +7,39 @@
 </head>
 <body>
     <div class="game-container">
-        <canvas id="gameCanvas" class="game-board" width="300" height="600"></canvas>
-        <div class="info-panel">
-            <div class="next-piece">
-                <h3>Next Piece</h3>
-                <canvas id="nextCanvas" class="next-canvas" width="120" height="80"></canvas>
+        <div class="grid"></div>
+        <div class="content">
+            <div class="info-panel">
+                <div class="next-piece">
+                    <h3>Next Piece</h3>
+                    <div class="mini-grid"></div>
+                </div>
             </div>
-        </div>
-        <div class="stats">
-            <h3>Score</h3>
-            <div class="stat-line">
-                <span>Score:</span>
-                <span id="score">0</span>
+            <div class="stats">
+                <h3>Score</h3>
+                <div class="stat-line">
+                    <span>Score:</span>
+                    <span id="score">0</span>
+                </div>
+                <div class="stat-line">
+                    <span>Lines:</span>
+                    <span id="lines">0</span>
+                </div>
+                <div class="stat-line">
+                    <span>Level:</span>
+                    <span id="level">1</span>
+                </div>
             </div>
-            <div class="stat-line">
-                <span>Lines:</span>
-                <span id="lines">0</span>
+            <div class="game-over" id="gameOver">
+                <h2>Game Over!</h2>
+                <div class="stat-line">
+                    <span>Final Score:</span>
+                    <span id="finalScore">0</span>
+                </div>
+                <button id="restartBtn">Play Again</button>
             </div>
-            <div class="stat-line">
-                <span>Level:</span>
-                <span id="level">1</span>
-            </div>
-        </div>
-        <div class="game-over" id="gameOver">
-            <h2>Game Over!</h2>
-            <div class="stat-line">
-                <span>Final Score:</span>
-                <span id="finalScore">0</span>
-            </div>
-            <button>Play Again</button>
         </div>
     </div>
+    <script src="js/gameplay.js"></script>
 </body>
-<script src="js/gameplay.js"></script>
 </html>

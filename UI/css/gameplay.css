@@ -1,3 +1,174 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
+body {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: darkgray;
+  font-family: Arial, sans-serif;
+}
+
+.game-container {
+  position: relative;
+  width: 40%;
+  min-height: 100vh;
+  padding: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  flex-wrap: wrap;
+  background: url("../img/background.png") center/cover no-repeat;
+  border-radius: 20px;
+}
+.game-container .grid {
+  display: grid;
+  grid-template-columns: repeat(10, 30px);
+  grid-template-rows: repeat(21, 30px);
+  width: 306px;
+  height: 636px;
+  background: rgba(10, 15, 40, 0.9);
+  border: 3px solid #ffd54f;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 15px rgba(255, 213, 79, 0.4), 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+.game-container .grid > div {
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+.game-container .grid .tetromino {
+  border: 2px solid rgba(255, 255, 255, 0.65);
+  box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.25);
+}
+.game-container .grid .floor {
+  background-color: #29204f;
+  border: none;
+}
+.game-container .content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 50px;
+}
+.game-container .content .info-panel, .game-container .content .stats {
+  width: 180px;
+  padding: 20px;
+  background: rgba(25, 20, 100, 0.65);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 15px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  color: #ffffff;
+}
+.game-container .content .info-panel h3, .game-container .content .stats h3 {
+  font-size: 22px;
+  text-align: center;
+  color: #ffd54f;
+  margin-bottom: 20px;
+}
+.game-container .content .info-panel .next-piece {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.game-container .content .info-panel .mini-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 25px);
+  grid-template-rows: repeat(4, 25px);
+  width: 100px;
+  height: 100px;
+  background: rgba(10, 15, 40, 0.65);
+  border-radius: 8px;
+}
+.game-container .content .info-panel .mini-grid > div {
+  width: 25px;
+  height: 25px;
+}
+.game-container .content .info-panel .mini-grid .tetromino {
+  border: 2px solid rgba(255, 255, 255, 0.65);
+  box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.2);
+}
+.game-container .content .stats {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.game-container .content .stats .stat-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+}
+.game-container .content .stats .stat-line span:first-child {
+  color: #e0d9ff;
+}
+.game-container .content .stats .stat-line span:last-child {
+  font-weight: bold;
+  color: #9eff00;
+  font-size: 20px;
+}
+.game-container .content .game-over {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 25px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-radius: 20px;
+  color: #ffffff;
+}
+.game-container .content .game-over h2 {
+  font-size: 48px;
+  color: #ffd54f;
+  text-shadow: 0 0 15px rgba(255, 213, 79, 0.6);
+}
+.game-container .content .game-over .stat-line {
+  display: flex;
+  gap: 15px;
+  font-size: 22px;
+}
+.game-container .content .game-over .stat-line #finalScore {
+  color: #9eff00;
+  font-weight: bold;
+}
+.game-container .content .game-over button {
+  width: 160px;
+  height: 55px;
+  background: #ffd54f;
+  border: none;
+  border-radius: 15px;
+  color: darkorchid;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+  transition: background 0.2s, transform 0.2s;
+}
+.game-container .content .game-over button:hover {
+  background: #9eff00;
+  color: #0c0c0c;
+  transform: translateY(-3px);
+}
+.game-container .content .game-over button:active {
+  transform: translateY(0);
+  color: black;
+}
 
 /*# sourceMappingURL=gameplay.css.map */
