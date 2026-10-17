@@ -34,9 +34,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let chaoRemain = 0;
     let chaoActive = false;
     let rotateTime = null;
+    let countBlock = 0;
 
     const colors = ['orange', 'red', 'purple', 'yellow', 'cyan', 'green', 'blue'];
-    const levelScore = [1000, 10000, 15000, 25000];
+    const levelScore = [1000, 2000, 3500, 4500];
 
     const J = [
         [0, 0, 1],
@@ -351,6 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const points = [0, 100, 300, 500, 800];
             score += points[clearedLines];
             lines += clearedLines;
+            countBlock = 0
             scoreDisplay.textContent = score;
             linesDisplay.textContent = lines;
             for (let i = 0; i < luckyPosition.length; i++) {
@@ -362,6 +364,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
             checkLevel();
+        } else if (level >= 3 && clearedLines === 0){
+            countBlock += 1;
+            if (countBlock === 5){
+                addLastRow();
+                countBlock = 0;
+            }
         }
     }
 
@@ -433,6 +441,7 @@ document.addEventListener('DOMContentLoaded', () => {
         isGameOver = false;
         currentRow = 0;
         currentCol = 3;
+        countBlock = 0;
         random = Math.floor(Math.random() * theBlock.length);
         nextRandom = Math.floor(Math.random() * theBlock.length);
         current = theBlock[random];
@@ -554,6 +563,44 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         updateSpeed();
         autoRotateBlock();
+    }
+
+    function addLastRow(){
+        const positionDivAdd = [];
+        let countAdd = Math.floor(Math.random() * 5) + 5;
+        while(positionDivAdd.length < countAdd){
+            const random = Math.floor(Math.random() * 10);
+            let different = true;
+            for (let i = 0; i < positionDivAdd.length; i++) {
+                if(positionDivAdd[i] === random){
+                    different = false;
+                    break;
+                }
+            }
+            if (different){
+                positionDivAdd.push(random);
+            }
+        }
+
+        for(let i = 0; i < width; i++){
+            if(squares[i].classList.contains('taken')){
+                gameOver();
+                return;
+            }
+        }
+
+        const firstRow = squares.splice(0, width);
+        squares.splice((height-1)*width, 0, ...firstRow);
+
+        for (let i = 0; i < positionDivAdd.length; i++) {
+            const index = (height - 1) * width + positionDivAdd[i];
+            squares[index].classList.add('taken');
+            squares[index].style.backgroundColor = 'gray';
+        }
+
+        for (let i = 0; i < squares.length; i++) {
+            grid.appendChild(squares[i]);
+        }
     }
 
     document.addEventListener('keydown', control);
