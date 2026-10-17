@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameOverDisplay = document.querySelector('#gameOver');
     const finalScore = document.querySelector('#finalScore');
     const restart = document.querySelector('#restartBtn');
+    const levelUpDisplay = document.querySelector('#gameLevelUp');
 
     const width = 10;
     const height = 20;
@@ -17,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let timerId = null;
     let score = 0;
+    let level = 1;
     let lines = 0;
     let isGameOver =false;
 
@@ -26,7 +28,15 @@ document.addEventListener('DOMContentLoaded', () => {
     let nextRandom = 0;
     let current = [];
 
+    let isLuckyBlock;
+    let luckyRow;
+    let luckyCol;
+    let chaoRemain = 0;
+    let chaoActive = false;
+    let rotateTime = null;
+
     const colors = ['orange', 'red', 'purple', 'yellow', 'cyan', 'green', 'blue'];
+    const levelScore = [1000, 10000, 15000, 25000];
 
     const J = [
         [0, 0, 1],
@@ -108,12 +118,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     const newRow = currentRow + row;
                     const newCol = currentCol + col;
 
-                    if (newRow >= 0 && newRow < height &&
-                        newCol >= 0 && newCol < width) {
+                    if (newRow >= 0 && newRow < height && newCol >= 0 && newCol < width) {
                         const index = newRow * width + newCol;
-
                         squares[index].classList.add('tetromino');
-                        squares[index].style.backgroundColor = colors[random];
+                        if(isLuckyBlock && row === luckyRow && col === luckyCol){
+                            squares[index].style.backgroundColor = 'gold';
+                            squares[index].textContent = '?';
+                        }else{
+                            squares[index].style.backgroundColor = colors[random];
+                        }
                     }
                 }
             }
@@ -132,6 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const index = newRow * width + newCol;
                         squares[index].classList.remove('tetromino');
                         squares[index].style.backgroundColor = '';
+                        squares[index].textContent = '';
                     }
                 }
             }
@@ -163,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function move(row, col) {
-        if (isGameOver) return;
+        if (isGameOver ||  isLevelUp) return;
 
         if (isValidPosition(current, currentRow + row, currentCol + col)) {
             undraw();
@@ -191,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function rotate() {
-        if (isGameOver) return;
+        if (isGameOver || isLevelUp) return;
 
         const rotated = rotateMatrix(current);
         let newCol = currentCol;
@@ -202,18 +216,35 @@ document.addEventListener('DOMContentLoaded', () => {
             else if (isValidPosition(rotated, currentRow, newCol + 1)) {
                 newCol++;
             }
+            else if (isValidPosition(rotated, currentRow, newCol - 2)) {
+                newCol -= 2;
+            }
+            else if (isValidPosition(rotated, currentRow, newCol + 2)) {
+                newCol += 2;
+            }
             else {
                 return;
             }
         }
 
         undraw();
+
+        if (isLuckyBlock){
+            const newLuckyRow = luckyCol;
+            const newLuckyCol = current.length - 1 - luckyRow;
+
+            luckyRow = newLuckyRow;
+            luckyCol = newLuckyCol;
+        }
+
         current = rotated;
         currentCol = newCol;
         draw();
     }
 
     function freeze() {
+        clearInterval(rotateTime);
+        rotateTime = null;
         let aboveBoard = false;
 
         for (let row = 0; row < current.length; row++) {
@@ -226,6 +257,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     } else {
                         const index = newRow * width + newCol;
                         squares[index].classList.add('taken');
+                        if (isLuckyBlock && row === luckyRow && col === luckyCol) {
+                            squares[index].classList.add('lucky');
+                        }
                     }
                 }
             }
@@ -234,14 +268,21 @@ document.addEventListener('DOMContentLoaded', () => {
             gameOver();
             return;
         }
+        if (chaoActive && chaoRemain > 0) {
+            chaoRemain--;
+        }
 
         addScore();
+        if (isLevelUp){
+            return;
+        }
 
         random = nextRandom;
         nextRandom = Math.floor(Math.random() * theBlock.length);
         current = theBlock[random];
         currentRow = 0;
         currentCol = 3;
+        prepareNewBlock();
 
         displayShape();
 
@@ -274,10 +315,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function addScore() {
         let clearedLines = 0;
-
+        const luckyPosition = [];
         for (let row = height - 1; row >= 0; row--) {
             let fullRow = true;
-
             for (let col = 0; col < width; col++) {
                 const index = row * width + col;
                 if (!squares[index].classList.contains('taken')) {
@@ -285,15 +325,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     break;
                 }
             }
-
             if (fullRow) {
+                for (let col = 0; col < width; col++) {
+                    const index = row * width + col;
+                    if (squares[index].classList.contains('lucky')) {
+                        luckyPosition.push([row, col]);
+                    }
+                }
                 clearedLines++;
                 const startIndex = row * width;
                 const removedSquares = squares.splice(startIndex, width);
-
                 for (let i = 0; i < removedSquares.length; i++) {
-                    removedSquares[i].classList.remove('taken', 'tetromino');
+                    removedSquares[i].classList.remove('taken', 'tetromino', 'lucky');
                     removedSquares[i].style.backgroundColor = '';
+                    removedSquares[i].textContent = '';
                 }
                 squares = removedSquares.concat(squares);
                 for (let i = 0; i < squares.length; i++) {
@@ -302,25 +347,41 @@ document.addEventListener('DOMContentLoaded', () => {
                 row++;
             }
         }
-
         if (clearedLines > 0) {
             const points = [0, 100, 300, 500, 800];
             score += points[clearedLines];
             lines += clearedLines;
             scoreDisplay.textContent = score;
             linesDisplay.textContent = lines;
+            for (let i = 0; i < luckyPosition.length; i++) {
+                const effect = Math.floor(Math.random() * 2) + 1;
+                if (effect === 1) {
+                    explosionBlock(luckyPosition[i][0], luckyPosition[i][1]);
+                } else {
+                    activityChao();
+                }
+            }
+            checkLevel();
         }
     }
 
     function gameOver() {
         isGameOver = true;
         clearInterval(timerId);
+        clearInterval(rotateTime);
+        rotateTime = null;
         timerId = null;
         finalScore.textContent = score;
         gameOverDisplay.style.display = 'flex';
     }
 
     function control(e) {
+        if (isLevelUp){
+            if (e.key === 'Enter'){
+                nextLevel();
+            }
+            return;
+        }
         if (isGameOver) return;
 
         if (e.key === 'ArrowLeft' ||
@@ -337,6 +398,9 @@ document.addEventListener('DOMContentLoaded', () => {
             move(0, 1);
         } else if (e.key === 'ArrowUp') {
             rotate();
+            if(level >= 2){
+                autoRotateBlock();
+            }
         } else if (e.key === 'ArrowDown') {
             move(1, 0);
         } else if (e.code === 'Space') {
@@ -352,11 +416,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function startGame() {
         clearInterval(timerId);
+        clearInterval(rotateTime);
         createGrid();
         createMiniGrid();
 
         score = 0;
         lines = 0;
+        level = 1;
+        isLevelUp = false;
+        isLuckyBlock = false;
+        luckyRow = -1;
+        luckyCol = -1;
+        chaoRemain = 0;
+        chaoActive = false;
+        rotateTime = null;
         isGameOver = false;
         currentRow = 0;
         currentCol = 3;
@@ -366,10 +439,121 @@ document.addEventListener('DOMContentLoaded', () => {
         scoreDisplay.textContent = score;
         linesDisplay.textContent = lines;
         gameOverDisplay.style.display = 'none';
+        levelDisplay.textContent = level;
+        levelUpDisplay.style.display = 'none';
 
         draw();
         displayShape();
-        timerId = setInterval(() => move(1, 0), 1000);
+        updateSpeed();
+    }
+
+    function checkLevel(){
+        if (level <= levelScore.length && score >= levelScore[level-1]){
+            level++;
+            levelDisplay.textContent = level;
+            levelUp();
+        }
+    }
+
+    let isLevelUp = false;
+    const levelGameUp = document.getElementById('levelUp');
+    function levelUp() {
+        isLevelUp = true;
+        clearInterval(timerId);
+        clearInterval(rotateTime);
+        rotateTime = null;
+        timerId = null;
+        levelUpDisplay.style.display = 'flex';
+        levelGameUp.textContent = level;
+    }
+
+    function nextLevel(){
+        isLevelUp = false;
+        levelUpDisplay.style.display = 'none';
+        currentRow = 0;
+        currentCol = 3;
+        random = Math.floor(Math.random() * theBlock.length);
+        nextRandom = Math.floor(Math.random() * theBlock.length);
+        current = theBlock[random];
+
+        displayShape();
+        prepareNewBlock();
+    }
+
+    function randomLuckyBlock(){
+        isLuckyBlock = false;
+
+        if (level < 2){
+            return;
+        }
+
+        const luckyBlock = Math.floor(Math.random() * 5) + 1;
+
+        if(luckyBlock === 1){
+            const tetrisBlock = [];
+            for (let i = 0; i < current.length; i++) {
+                for (let j = 0; j < current[i].length; j++) {
+                    if (current[i][j] === 1) {
+                        tetrisBlock.push([i, j]);
+                    }
+                }
+            }
+
+            const positionLucky = Math.floor(Math.random() * tetrisBlock.length);
+            luckyRow = tetrisBlock[positionLucky][0];
+            luckyCol = tetrisBlock[positionLucky][1];
+            isLuckyBlock = true;
+        }
+    }
+
+    function activityChao(){
+        chaoRemain = 3;
+    }
+
+    function updateSpeed(){
+        clearInterval(timerId);
+        timerId = null;
+        let speed = 1000;
+        if (level >= 2){
+            speed = 800;
+        }
+        if(chaoActive){
+            speed = 200;
+        }
+        timerId = setInterval(() => move(1, 0), speed);
+    }
+
+    function autoRotateBlock(){
+        clearInterval(rotateTime);
+        rotateTime = null;
+
+        if(level >= 2){
+            rotateTime = setInterval(() => rotate(), 2000);
+        }
+    }
+
+    function explosionBlock(centerRow, centerCol){
+        for (let row = centerRow - 1; row <= centerRow + 1; row++) {
+            for (let col = centerCol - 1; col <= centerCol + 1; col++) {
+                if (row >= 0 && row < height && col >= 0 && col < width) {
+                    const index = row * width + col;
+                    squares[index].classList.remove('taken', 'tetromino', 'lucky');
+                    squares[index].style.backgroundColor = '';
+                    squares[index].textContent = '';
+                }
+            }
+        }
+    }
+
+    function prepareNewBlock(){
+        randomLuckyBlock();
+        if(chaoRemain > 0){
+            chaoActive = true;
+        }else {
+            chaoActive = false;
+        }
+        updateSpeed();
+        autoRotateBlock();
     }
 
     document.addEventListener('keydown', control);

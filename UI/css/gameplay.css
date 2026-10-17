@@ -47,10 +47,21 @@ body {
 .game-container .grid .tetromino {
   border: 2px solid rgba(255, 255, 255, 0.65);
   box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.25);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
 }
 .game-container .grid .floor {
   background-color: #29204f;
   border: none;
+}
+.game-container .grid .lucky {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  color: black;
 }
 .game-container .content {
   display: flex;
@@ -169,6 +180,33 @@ body {
 .game-container .content .game-over button:active {
   transform: translateY(0);
   color: black;
+}
+.game-container .content .level-up {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 25px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-radius: 20px;
+  color: #ffffff;
+}
+.game-container .content .level-up h2 {
+  font-size: 48px;
+  color: #ffd54f;
+  text-shadow: 0 0 15px rgba(255, 213, 79, 0.6);
+}
+.game-container .content .level-up p {
+  font-size: 22px;
+  font-weight: bold;
+}
+.game-container .content .level-up #levelUp {
+  color: #9eff00;
 }
 
 /*# sourceMappingURL=gameplay.css.map */
